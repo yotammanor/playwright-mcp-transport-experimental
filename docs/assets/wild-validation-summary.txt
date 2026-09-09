@@ -1,0 +1,18 @@
+$ ./scripts/wild-validation-sweep.sh   # representative September 2026 run
+
+Repo          Transport   Passed   Skipped   Failed   Notes
+────────────  ─────────   ──────   ───────   ──────   ─────────────────────────────────────
+SvelteKit     MCP         960      26        0        full JS-enabled project sweep
+Cal.com       MCP         20+      1         0        event-types + auth flows; avatar upload excluded (upstream flake)
+Astro         MCP         424      4         6        isolated reruns green; view-transitions fails identically under native Playwright
+Qwik          MCP         197      —         2        core suite partial; effect-client/resource timing gaps
+Nuxt          MCP         13       4         5        representative slice; fixture tsconfig + dispatchEvent timing
+
+$ PLAYWRIGHT_MCP_TRANSPORT=native npx playwright test e2e/view-transitions.spec.ts
+  ✗ beforeAll hook timeout (180s) — dev-server warmup, not MCP-specific
+
+$ npx playwright test -c starters/playwright.config.ts e2e/toggle.spec.ts
+  ✓ e2e.toggle passed (55.2s) — cold webServer, workers=1, MCP stdio per test
+
+Swap pattern in every repo:
+  import { test, expect } from './mcp-test.ts';   // was '@playwright/test'

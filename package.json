@@ -1,0 +1,38 @@
+{
+  "name": "playwright-mcp-transport-experimental",
+  "version": "0.1.0",
+  "description": "Experimental Playwright Test extension that drives a browser through an MCP server instead of Playwright's native page/browser transport.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:unit": "playwright test -c playwright.config.ts tests/unit",
+    "test:integration": "playwright test -c playwright.config.ts tests/integration",
+    "test": "npm run typecheck && npm run test:unit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.50.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@playwright/mcp": "^0.0.77",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.6.0"
+  }
+}

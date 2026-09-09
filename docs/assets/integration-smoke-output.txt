@@ -1,0 +1,11 @@
+$ npm run test:integration -- --grep "navigate, CSS" --reporter=line
+
+> playwright-mcp-transport-experimental@0.1.0 test:integration
+> playwright test -c playwright.config.ts tests/integration --grep navigate, CSS --reporter=line
+
+Running 1 test using 1 worker
+
+[1/1] tests/integration/shim-flow.spec.ts:20:3 › shim: Page/Locator-shaped adapter against a real @playwright/mcp server › navigate, CSS/role/testid locators, form fill + click round-trip
+  ✓  1 passed (18.2s)
+
+# Real browser. Real @playwright/mcp stdio server. No native CDP page fixture.

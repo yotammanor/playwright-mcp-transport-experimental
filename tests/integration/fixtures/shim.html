@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+  <head><title>Shim Fixture</title></head>
+  <body>
+    <h1>Shim Fixture</h1>
+    <h2 id="padded-heading">
+      Padded Heading
+    </h2>
+    <input id="name" placeholder="Your name" data-testid="name-field" />
+    <input type="checkbox" id="agree" checked />
+    <button id="save-btn" class="btn primary">Save</button>
+    <button><div id="display-contents-label" style="display: contents">Visible contents</div></button>
+    <p id="status"></p>
+    <ul>
+      <li class="item">One</li>
+      <li class="item">Two</li>
+      <li class="item">Three</li>
+    </ul>
+    <section id="other-panel" class="panel"><button aria-label="Other">Other</button></section>
+    <section id="liked-panel" class="panel"><button id="label-button" aria-label="Like">Liked</button></section>
+    <button id="pending-button">Start pending work</button>
+    <button id="transition-button">Start text transition</button>
+    <p id="transition-status">idle</p>
+    <button id="html-transition-button">Start HTML transition</button>
+    <p id="html-transition-status"><span class="idle">idle</span></p>
+    <button id="multi-click-button">Click repeatedly</button>
+    <p id="multi-click-status">0</p>
+    <button id="pointer-target">Pointer target</button>
+    <p id="pointer-status">idle</p>
+    <button id="hover-request">Hover request</button>
+    <a id="non-html-link" href="/fixture.svg">Open SVG document</a>
+    <a id="popup-link" href="/shim.html?popup=true" target="_blank">Open popup</a>
+    <a id="download-link" href="data:text/plain,shim-download" download="fixture.txt">Download fixture</a>
+    <a id="reload-link" href="/shim.html?reloaded=true">Full-page navigation</a>
+    <iframe id="fixture-frame" srcdoc="<h1>Inside Frame</h1>"></iframe>
+    <input id="upload" type="file" />
+    <p id="upload-status"></p>
+    <shadow-fixture></shadow-fixture>
+    <script>
+      document.getElementById('save-btn').addEventListener('click', () => {
+        document.getElementById('status').textContent = 'Saved: ' + document.getElementById('name').value;
+      });
+      document.getElementById('pending-button').addEventListener('click', async (event) => {
+        const button = event.currentTarget;
+        button.disabled = true;
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        button.disabled = false;
+      });
+      document.getElementById('transition-button').addEventListener('click', async () => {
+        document.documentElement.setAttribute('data-transient-direction', 'forward');
+        setTimeout(() => document.documentElement.removeAttribute('data-transient-direction'), 25);
+        document.getElementById('transition-status').textContent = 'pending';
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        document.getElementById('transition-status').textContent = 'complete';
+      });
+      document.getElementById('html-transition-button').addEventListener('click', () => {
+        const status = document.getElementById('html-transition-status');
+        status.innerHTML = '';
+        queueMicrotask(() => {
+          status.innerHTML = '<span class="pending">pending</span>';
+          setTimeout(() => {
+            status.innerHTML = '<span class="complete">complete</span>';
+          }, 25);
+        });
+      });
+      setTimeout(() => {
+        const attribute = document.createElement('div');
+        attribute.id = 'late-attribute';
+        attribute.dataset.state = 'ready';
+        document.body.append(attribute);
+
+        const button = document.createElement('button');
+        button.id = 'late-button';
+        button.textContent = 'Late button';
+        button.addEventListener('click', () => {
+          document.getElementById('status').textContent = 'Late button clicked';
+        });
+        document.body.append(button);
+      }, 500);
+      document.getElementById('multi-click-button').addEventListener('click', () => {
+        const status = document.getElementById('multi-click-status');
+        status.textContent = String(Number(status.textContent) + 1);
+      });
+      document.getElementById('pointer-target').addEventListener('mousedown', () => {
+        document.getElementById('pointer-status').textContent = 'down';
+      });
+      document.getElementById('pointer-target').addEventListener('mouseup', () => {
+        document.getElementById('pointer-status').textContent = 'up';
+      });
+      document.getElementById('hover-request').addEventListener('mouseenter', () => {
+        setTimeout(() => fetch('/shim.html?hover-request=true'), 50);
+      });
+      document.getElementById('pointer-target').addEventListener('touchstart', () => {
+        document.getElementById('pointer-status').textContent = 'touch';
+      });
+      window.greet = (name) => {
+        document.getElementById('status').textContent = 'Hi ' + name;
+      };
+      document.getElementById('upload').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        document.getElementById('upload-status').textContent = file ? `${file.name}:${file.size}` : 'empty';
+      });
+      const shadowRoot = document.querySelector('shadow-fixture').attachShadow({ mode: 'open' });
+      shadowRoot.innerHTML =
+        '<span class="inside">Shadow value</span><button id="shadow-icon"><span class="copy"></span></button>';
+      shadowRoot.querySelector('#shadow-icon').addEventListener('click', (event) => {
+        const button = event.currentTarget;
+        const initial = button.innerHTML;
+        button.innerHTML = '';
+        queueMicrotask(() => {
+          button.innerHTML = initial;
+          queueMicrotask(() => {
+            button.innerHTML = '<span class="check"></span>';
+            setTimeout(() => {
+              button.innerHTML = initial;
+            }, 25);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

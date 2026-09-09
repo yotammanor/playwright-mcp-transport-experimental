@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head><title>MCP Integration Fixture</title></head>
+  <body>
+    <h1>MCP Integration Fixture</h1>
+    <input id="name-input" placeholder="Your name" />
+    <button id="save-btn">Save</button>
+    <p id="status"></p>
+    <script>
+      document.getElementById('save-btn').addEventListener('click', () => {
+        const name = document.getElementById('name-input').value;
+        document.getElementById('status').textContent = 'Saved: ' + name;
+      });
+    </script>
+  </body>
+</html>
